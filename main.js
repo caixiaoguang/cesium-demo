@@ -1,7 +1,7 @@
 window.onload = function () {
     viewer = initViewer();
-    // initTrack(trackData[0]);
-    loadNavdata();
+    initTrack(trackData[0]);
+    // loadNavdata();
 }
 
 function initViewer() {
