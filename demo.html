@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,minimum-scale=1,maximum-scale=1">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="x5-fullscreen" content="true">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="keywords" content="火星科技,cesium,3D,GIS,marsgis,三维,地球,地图,开发,框架,系统,示例,资料,模型,离线,外包,合肥,安徽,中国">
+    <meta name="description"
+        content="火星科技 合肥火星 合肥火星科技 合肥火星科技有限公司 leaflet leaflet框架 leaflet开发 cesium cesium开发 cesium框架 三维 地球 模型  gis marsgis 地图离线 地图开发 地图框架 地图外包 框架 开发 外包  地图离线 二维地图 三维地图 全景漫游 地理信息系统 云GIS 三维GIS GIS平台 WebGIS">
+    <link rel="shortcut icon" type="image/x-icon" href="../docs/img/favicon/favicon.ico">
+    <title>点+文字 Entity矢量数据加载 |MarsGIS for Cesium|三维地图| 火星科技|合肥火星科技|合肥火星科技有限公司</title>
+    <script src="../lib/include-lib.js" libpath="../lib/"
+        include="jquery,font-awesome,bootstrap,bootstrap-checkbox,layer,haoutil,turf,cesium-mars"></script>
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body class="dark">
+    <div id="mask" class="signmask" onclick="removeMask()"></div>
+    <div id="cesiumContainer" class="cesium-container"></div>
+    <div class="infoview">
+        <div class="checkbox checkbox-primary checkbox-inline"><input id="chkClustering" class="styled" type="checkbox">
+            <label for="chkClustering">是否聚合</label></div>
+    </div>
+    <script>
+        function removeMask() {
+            $("#mask").remove()
+        }
+        var viewer, dataSource;
+
+        function initMap() {
+            var e = haoutil.system.getRequestByName("config", "config/config.json");
+            mars3d.createMap({
+                id: "cesiumContainer",
+                url: e,
+                success: function (e, t) {
+                    viewer = e, setTimeout(removeMask, 3e3), initWork()
+                }
+            })
+        }
+
+        function initWork() {
+            $.getJSON("../data/apidemo/marker.json", function (e) {
+                addFeature(e.Data)
+            }), $("#chkClustering").change(function () {
+                var e = $(this).prop("checked");
+                dataSource.clustering.enabled = e
+            })
+        }
+
+        function addFeature(e) {
+            dataSource = new Cesium.CustomDataSource;
+            for (var t = 0, i = e.length; t < i; t++) {
+                var a = e[t],
+                    r =
+                    '<table style="width: 200px;"><tr><th scope="col" colspan="4"  style="text-align:center;font-size:15px;">' +
+                    a.name +
+                    '</th></tr><tr><td >住用单位：</td><td >XX单位</td></tr><tr><td >建筑面积：</td><td >43平方米</td></tr><tr><td >建筑层数：</td><td >2</td></tr><tr><td >建筑结构：</td><td >钢混</td></tr><tr><td >建筑年份：</td><td >2006年</td></tr><tr><td colspan="4" style="text-align:right;"><a href="javascript:showXQ(\'' +
+                    a.ID + "')\">更多</a></td></tr></table>";
+                dataSource.entities.add({
+                    name: a.name,
+                    position: Cesium.Cartesian3.fromDegrees(a.X, a.Y),
+                    point: {
+                        color: new Cesium.Color.fromCssColorString("#3388ff"),
+                        pixelSize: 10,
+                        outlineColor: new Cesium.Color.fromCssColorString("#ffffff"),
+                        outlineWidth: 2,
+                        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                        scaleByDistance: new Cesium.NearFarScalar(150, 1, 8e6, .2)
+                    },
+                    label: {
+                        text: a.name,
+                        font: "normal small-caps normal 17px 楷体",
+                        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                        fillColor: Cesium.Color.AZURE,
+                        outlineColor: Cesium.Color.BLACK,
+                        outlineWidth: 2,
+                        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                        pixelOffset: new Cesium.Cartesian2(0, -20),
+                        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                        distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 2e6)
+                    },
+                    data: a,
+                    tooltip: {
+                        html: r,
+                        anchor: [0, -12]
+                    }
+                })
+            }
+            viewer.flyTo(dataSource.entities, {
+                duration: 3
+            }), dataSource.clustering.enabled = !1, dataSource.clustering.pixelRange = 20;
+            var n = {},
+                o = new Cesium.PinBuilder;
+            dataSource.clustering.clusterEvent.addEventListener(function (e, t) {
+                var i = e.length;
+                t.label.show = !1, t.billboard.show = !0, t.billboard.id = t.label.id, t.billboard
+                    .verticalOrigin = Cesium.VerticalOrigin.BOTTOM, n[i] || (n[i] = o.fromText(i, Cesium.Color
+                        .BLUE, 48).toDataURL()), t.billboard.image = n[i]
+            }), viewer.dataSources.add(dataSource)
+        }
+
+        function showXQ(e) {
+            layer.open({
+                type: 2,
+                title: "查看历史",
+                fix: !0,
+                shadeClose: !0,
+                maxmin: !0,
+                area: ["80%", "80%"],
+                content: "http://marsgis.cn/",
+                skin: "layer-mars-dialog animation-scale-up",
+                success: function (e) {}
+            })
+        }
+        $(document).ready(function () {
+            mars3d.util.webglreport() || (alert("系统检测到您使用的浏览器不支持WebGL功能"), layer.open({
+                type: 1,
+                title: "当前浏览器不支持WebGL功能",
+                closeBtn: 0,
+                shadeClose: !1,
+                resize: !1,
+                area: ["600px", "200px"],
+                content: '<div style="margin: 20px;"><h3>系统检测到您使用的浏览器不支持WebGL功能！</h3>  <p>1、请您检查浏览器版本，安装使用最新版chrome、火狐或IE11以上浏览器！</p> <p>2、WebGL支持取决于GPU支持，请保证客户端电脑已安装显卡驱动程序！</p></div>'
+            })), initMap()
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./Cesium/Widgets/widgets.css">
+    <link rel="stylesheet" href="./main.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="mapView">
+    </div>
+    <div class="backdrop" id="menu">
+        <h2>选项控制</h2>
+        <span><strong>相机模式</strong></span>
+        <div class="nowrap">
+            <input id="freeMode" name="source" type="radio" checked />
+            <label for="freeMode">自由视角</label>
+        </div>
+        <div class="nowrap">
+            <input id="shipMode" name="source" type="radio" />
+            <label for="shipMode">跟随船只</label>
+        </div>
+    </div>
+    <div id="loadingIndicator" class="cover">
+        <div id="loadingIcon" class="loadingIndicator"></div>
+    </div>
+</body>
+
+<script src="./jquery-1.8.2.min.js"></script>
+<script src="./Cesium/Cesium.js"></script>
+<!-- <script src="./index.js"></script> -->
+<script src="./trackData.js"></script>
+<script src="./main.js"></script>
+
+</html>
