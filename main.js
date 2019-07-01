@@ -11,15 +11,15 @@ function initViewer() {
         navigationHelpButton: false,
         creditsDisplay: false,
         baseLayerPicker: false,
-        imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
-            url: "http://t0.tianditu.com/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=1902c209c7a7480dfb962751b839b91e",
-            layer: "tdtBasicLayer",
-            style: "default",
-            format: "image/jpeg",
-            tileMatrixSetID: "GoogleMapsCompatible",
-            show: false,
-            maximumLevel: 18
-        }),
+        // imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
+        //     url: "http://t0.tianditu.com/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=1902c209c7a7480dfb962751b839b91e",
+        //     layer: "tdtBasicLayer",
+        //     style: "default",
+        //     format: "image/jpeg",
+        //     tileMatrixSetID: "GoogleMapsCompatible",
+        //     show: false,
+        //     maximumLevel: 18
+        // }),
         terrainProvider: Cesium.createWorldTerrain({
             requestWaterMask: true,
             requestVertexNormals: true
