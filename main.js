@@ -10,7 +10,7 @@ function initViewer() {
         geocoder: false,
         navigationHelpButton: false,
         creditsDisplay: false,
-        baseLayerPicker: false,
+        // baseLayerPicker: false,
         // imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
         //     url: "http://t0.tianditu.com/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=1902c209c7a7480dfb962751b839b91e",
         //     layer: "tdtBasicLayer",
