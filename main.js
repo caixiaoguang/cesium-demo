@@ -35,10 +35,6 @@ function initViewer() {
         baseLayerPicker: false,
         imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
             url: "http://t0.tianditu.com/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=1902c209c7a7480dfb962751b839b91e",
-<<<<<<< HEAD
-            // url:"http://10.150.25.19:3001/MapService.ashx?REQUEST=GetMap&SERVICE=CacheMap&Y={TileCol}&X={TileRow}&LEVEL={TileMatrix}&LAYERS=HN_Image&SessionID=0",
-=======
->>>>>>> master
             layer: "tdtBasicLayer",
             style: "default",
             format: "image/jpeg",
