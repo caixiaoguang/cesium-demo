@@ -35,7 +35,10 @@ function initViewer() {
         baseLayerPicker: false,
         imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
             url: "http://t0.tianditu.com/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=1902c209c7a7480dfb962751b839b91e",
+<<<<<<< HEAD
             // url:"http://10.150.25.19:3001/MapService.ashx?REQUEST=GetMap&SERVICE=CacheMap&Y={TileCol}&X={TileRow}&LEVEL={TileMatrix}&LAYERS=HN_Image&SessionID=0",
+=======
+>>>>>>> master
             layer: "tdtBasicLayer",
             style: "default",
             format: "image/jpeg",
@@ -253,18 +256,45 @@ function addFeature(e) {
     var points = viewer.scene.primitives.add(new Cesium.PointPrimitiveCollection());
     var billboards = viewer.scene.primitives.add(new Cesium.BillboardCollection());
     var pinBuilder = new Cesium.PinBuilder();
-    var pin = pinBuilder.fromColor(Cesium.Color.RED, 32).toDataURL();
     var dataSource = new Cesium.CustomDataSource;
-    var entityCollection = new Cesium.EntityCollection();
+    // var pin = pinBuilder.fromUrl('./png64/winfo-icon-gaosuchuan.png',Cesium.Color.GREEN,48).toDataURL();
 
-
-    for (var i = 0, len = e.length; i < len; i++) {
-        var point = e[i];
-        var lng, lat;
-        //区分出点数据
-        if (point.POSITION.indexOf(';') === -1) {
-            lng = point.POSITION.split(',')[1];
+    for (var i = 0, len = 2000; i < len; i++) {
+        var point = e[i],
+            lng = point.POSITION.split(',')[1],
             lat = point.POSITION.split(',')[0];
+        dataSource.entities.add({
+            name: point.NAME,
+            position: Cesium.Cartesian3.fromDegrees(lng, lat),
+            point: {
+                color: new Cesium.Color.fromCssColorString("#3388ff"),
+                pixelSize: 10,
+                outlineColor: new Cesium.Color.fromCssColorString("#ffffff"),
+                outlineWidth: 2,
+                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                scaleByDistance: new Cesium.NearFarScalar(150, 1, 8e6, .2)
+            },
+            label: {
+                text: point.NAME,
+                font: "normal small-caps normal 17px 楷体",
+                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                fillColor: Cesium.Color.AZURE,
+                outlineColor: Cesium.Color.BLACK,
+                outlineWidth: 2,
+                horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                pixelOffset: new Cesium.Cartesian2(0, -20),
+                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 2e4)
+            },
+            // data: a,
+            // tooltip: {
+            //     html: r,
+            //     anchor: [0, -12]
+            // }
+        })
+    }
+    viewer.dataSources.add(dataSource)
 
             //     points.add({
             //         id: point.NAME,
