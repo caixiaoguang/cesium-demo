@@ -1,29 +1,56 @@
 window.onload = function () {
     viewer = initViewer();
     initTrack(trackData[0]);
-    // loadNavdata();
+    loadNavdata();
 }
 
 function initViewer() {
     Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZmZiMzY5Yy1iN2NkLTRkMzctYjk3OC0wNTQwMTdjYjE1MjEiLCJpZCI6MTI0OTksInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1NjExMTc1MDR9.PnnRxlrYCtIx11c0N-14qpOpwfFDaCIQOIP6UYI7ZQo"
+
+    //加载本地影像数据
+    var imageryProvider = new Cesium.UrlTemplateImageryProvider({
+        url: "http://192.168.1.250:8088/gds_google/googlemaps/satellite/{z}/{x}/{y}.jpg",
+        tilingScheme: new Cesium.WebMercatorTilingScheme(),
+        fileExtension: 'jpg',
+        minimumLevel: 0,
+        maximumLevel: 16
+    });
+
+
+    //加载本地地形数据
+
+    var terrainLayer = new Cesium.CesiumTerrainProvider({
+        url: "http://192.168.1.250:8088/terrain_30m",
+        // 请求照明
+        requestVertexNormals: true,
+        // 请求水波纹效果
+        requestWaterMask: true
+    });
+
+
     var viewer = new Cesium.Viewer('mapView', {
         geocoder: false,
         navigationHelpButton: false,
         creditsDisplay: false,
-        // baseLayerPicker: false,
-        // imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
-        //     url: "http://t0.tianditu.com/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=1902c209c7a7480dfb962751b839b91e",
-        //     layer: "tdtBasicLayer",
-        //     style: "default",
-        //     format: "image/jpeg",
-        //     tileMatrixSetID: "GoogleMapsCompatible",
-        //     show: false,
-        //     maximumLevel: 18
-        // }),
+        baseLayerPicker: false,
+        imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
+            url: "http://t0.tianditu.com/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=1902c209c7a7480dfb962751b839b91e",
+            // url:"http://10.150.25.19:3001/MapService.ashx?REQUEST=GetMap&SERVICE=CacheMap&Y={TileCol}&X={TileRow}&LEVEL={TileMatrix}&LAYERS=HN_Image&SessionID=0",
+            layer: "tdtBasicLayer",
+            style: "default",
+            format: "image/jpeg",
+            tileMatrixSetID: "GoogleMapsCompatible",
+            show: false,
+            maximumLevel: 18
+        }),
         terrainProvider: Cesium.createWorldTerrain({
             requestWaterMask: true,
             requestVertexNormals: true
         })
+        // imageryProvider: imageryProvider,
+
+        // terrainProvider: terrainLayer
+
     });
     //去掉cesium logo标志
     viewer._cesiumWidget._creditContainer.style.display = 'none';
@@ -224,33 +251,73 @@ function loadNavdata() {
 
 function addFeature(e) {
     var points = viewer.scene.primitives.add(new Cesium.PointPrimitiveCollection());
-    var billboards = new Cesium.BillboardCollection();
+    var billboards = viewer.scene.primitives.add(new Cesium.BillboardCollection());
     var pinBuilder = new Cesium.PinBuilder();
-    var pin = pinBuilder.fromUrl('./png64/winfo-icon-gaosuchuan.png',Cesium.Color.GREEN,48).toDataURL();
+    var pin = pinBuilder.fromColor(Cesium.Color.RED, 32).toDataURL();
+    var dataSource = new Cesium.CustomDataSource;
+    var entityCollection = new Cesium.EntityCollection();
+
 
     for (var i = 0, len = e.length; i < len; i++) {
-        var point = e[i],
-            lng = point.POSITION.split(',')[1],
+        var point = e[i];
+        var lng, lat;
+        //区分出点数据
+        if (point.POSITION.indexOf(';') === -1) {
+            lng = point.POSITION.split(',')[1];
             lat = point.POSITION.split(',')[0];
-        // points.add({
-        //     position: Cesium.Cartesian3.fromDegrees(lng, lat),
-        //     color: new Cesium.Color.fromCssColorString("#3388ff"),
-        //     scaleByDistance: new Cesium.NearFarScalar(150, 1, 8e6, .2),
-        //     label:'qq'
-        // })
 
-        var billboard = {
-            position: new Cesium.Cartesian3.fromDegrees(lng, lat),
-            image: pin,
-            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            scaleByDistance: new Cesium.NearFarScalar(150, 0.8, 8e6, .2),
-            id: i,
-            label: '11111'
-        };
-        billboards.add(billboard);
+            //     points.add({
+            //         id: point.NAME,
+            //         position: Cesium.Cartesian3.fromDegrees(lng, lat),
+            //         color: Cesium.Color.ORANGE,
+            //         outlineColor: Cesium.Color.WHITE,
+            //         outlineWidth: 0.2,
+            //         pixelSize: 8,
+            //         distanceDisplayCondition: new Cesium.DistanceDisplayCondition(1e4)
+            //     })
+            // }
+            // billboards.add({
+            //     position: Cesium.Cartesian3.fromDegrees(lng, lat),
+            //     color: new Cesium.Color.fromCssColorString("#3388ff"),
+            //     scaleByDistance: new Cesium.NearFarScalar(150, 1, 8e6, .2),
+            //     // image: drawCanvas( point.NAME, 18),
+            //     distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 1e4),
+            // })
+
+
+            //datasource格式添加
+            dataSource.entities.add({
+                name: point.NAME,
+                position: Cesium.Cartesian3.fromDegrees(lng, lat),
+                point: {
+                    color: new Cesium.Color.fromCssColorString("#3388ff"),
+                    pixelSize: 10,
+                    outlineColor: new Cesium.Color.fromCssColorString("#ffffff"),
+                    outlineWidth: 1,
+                    heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                    scaleByDistance: new Cesium.NearFarScalar(150, 1, 8e6, .2)
+                },
+                label: {
+                    text: point.NAME,
+                    font: "normal small-caps normal 17px 楷体",
+                    style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                    fillColor: Cesium.Color.AZURE,
+                    outlineColor: Cesium.Color.BLACK,
+                    outlineWidth: 2,
+                    horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                    verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                    pixelOffset: new Cesium.Cartesian2(0, -20),
+                    heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                    distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 1e4)
+                },
+                tooltip: {
+                    html: 'aa',
+                    anchor: [0, -12]
+                }
+            })
+        }
     }
-    viewer.scene.primitives.add(billboards);
-
+    viewer.dataSources.add(dataSource)
     return
 
 
@@ -315,9 +382,28 @@ function addFeature(e) {
 
 
 
+//根据图片和文字绘制canvas
+function drawCanvas(text, fontsize) {
+    var canvas = document.createElement('canvas'); //创建canvas标签
+    var ctx = canvas.getContext('2d');
 
+    ctx.fillStyle = 'red';
+    ctx.font = fontsize + "px Arial";
 
+    canvas.width = ctx.measureText(text).width + fontsize * 2; //根据文字内容获取宽度
+    canvas.height = fontsize * 2; // fontsize * 1.5
 
+    // ctx.drawImage(img, fontsize / 2, fontsize / 2, fontsize, fontsize);
+
+    ctx.fillStyle = '#ccc';
+    ctx.font = fontsize + "px Calibri,sans-serif";
+    ctx.shadowOffsetX = 1; //阴影往左边偏，横向位移量
+    ctx.shadowOffsetY = 0; //阴影往左边偏，纵向位移量
+    ctx.shadowColor = "#fff"; //阴影颜色
+    ctx.shadowBlur = 1; //阴影的模糊范围
+    ctx.fillText(text, fontsize * 7 / 4, fontsize * 4 / 3);
+    return canvas;
+}
 
 
 

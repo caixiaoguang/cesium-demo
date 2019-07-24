@@ -1,11 +1,10 @@
-<!-- 2019-6-22 21:33:34 | 版权所有 火星科技 http://marsgis.cn  【联系我们 微信：muyao1987  邮箱 wh@marsgis.cn】 -->
+<!-- 2019-7-2 20:12:26 | 版权所有 火星科技 http://marsgis.cn  【联系我们 微信：muyao1987  邮箱 wh@marsgis.cn】 -->
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,minimum-scale=1,maximum-scale=1">
-    <meta name="author" content="火星科技 http://cesium.marsgis.cn ">
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -16,13 +15,13 @@
     <meta name="description"
         content="火星科技 合肥火星 合肥火星科技 合肥火星科技有限公司 leaflet leaflet框架 leaflet开发 cesium cesium开发 cesium框架 三维 地球 模型  gis marsgis 地图离线 地图开发 地图框架 地图外包 框架 开发 外包  地图离线 二维地图 三维地图 全景漫游 地理信息系统 云GIS 三维GIS GIS平台 WebGIS">
     <link rel="shortcut icon" type="image/x-icon" href="../docs/img/favicon/favicon.ico">
-    <title>图标点 Entity矢量数据加载 |MarsGIS for Cesium|三维地图| 火星科技|合肥火星科技|合肥火星科技有限公司</title>
+    <title>点+文字 Entity矢量数据加载 |MarsGIS for Cesium|三维地图| 火星科技|合肥火星科技|合肥火星科技有限公司</title>
     <script src="../lib/include-lib.js" libpath="../lib/"
         include="jquery,font-awesome,bootstrap,bootstrap-checkbox,layer,haoutil,turf,cesium-mars"></script>
     <link href="css/style.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="dark">
     <div id="mask" class="signmask" onclick="removeMask()"></div>
     <div id="cesiumContainer" class="cesium-container"></div>
     <div class="infoview">
@@ -56,7 +55,7 @@
         }
 
         function addFeature(e) {
-            dataSource = new Cesium.CustomDataSource("myData");
+            dataSource = new Cesium.CustomDataSource;
             for (var t = 0, i = e.length; t < i; t++) {
                 var a = e[t],
                     r =
@@ -67,31 +66,31 @@
                 dataSource.entities.add({
                     name: a.name,
                     position: Cesium.Cartesian3.fromDegrees(a.X, a.Y),
-                    billboard: {
-                        image: "img/marker/mark3.png",
-                        scale: .7,
-                        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-                        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                    point: {
+                        color: new Cesium.Color.fromCssColorString("#3388ff"),
+                        pixelSize: 10,
+                        outlineColor: new Cesium.Color.fromCssColorString("#ffffff"),
+                        outlineWidth: 2,
                         heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
                         scaleByDistance: new Cesium.NearFarScalar(150, 1, 8e6, .2)
                     },
                     label: {
                         text: a.name,
-                        font: "normal small-caps normal 19px 楷体",
+                        font: "normal small-caps normal 17px 楷体",
                         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
                         fillColor: Cesium.Color.AZURE,
                         outlineColor: Cesium.Color.BLACK,
                         outlineWidth: 2,
                         horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
                         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                        pixelOffset: new Cesium.Cartesian2(48, -13),
+                        pixelOffset: new Cesium.Cartesian2(0, -20),
                         heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
                         distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 2e6)
                     },
                     data: a,
-                    popup: {
+                    tooltip: {
                         html: r,
-                        anchor: [0, -25]
+                        anchor: [0, -12]
                     }
                 })
             }
