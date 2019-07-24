@@ -1,7 +1,7 @@
 window.onload = function () {
     viewer = initViewer();
     initTrack(trackData[0]);
-    // loadNavdata();
+    loadNavdata();
 }
 
 function initViewer() {
@@ -10,16 +10,16 @@ function initViewer() {
         geocoder: false,
         navigationHelpButton: false,
         creditsDisplay: false,
-        // baseLayerPicker: false,
-        // imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
-        //     url: "http://t0.tianditu.com/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=1902c209c7a7480dfb962751b839b91e",
-        //     layer: "tdtBasicLayer",
-        //     style: "default",
-        //     format: "image/jpeg",
-        //     tileMatrixSetID: "GoogleMapsCompatible",
-        //     show: false,
-        //     maximumLevel: 18
-        // }),
+        baseLayerPicker: false,
+        imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
+            url: "http://t0.tianditu.com/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=1902c209c7a7480dfb962751b839b91e",
+            layer: "tdtBasicLayer",
+            style: "default",
+            format: "image/jpeg",
+            tileMatrixSetID: "GoogleMapsCompatible",
+            show: false,
+            maximumLevel: 18
+        }),
         terrainProvider: Cesium.createWorldTerrain({
             requestWaterMask: true,
             requestVertexNormals: true
@@ -226,30 +226,45 @@ function addFeature(e) {
     var points = viewer.scene.primitives.add(new Cesium.PointPrimitiveCollection());
     var billboards = new Cesium.BillboardCollection();
     var pinBuilder = new Cesium.PinBuilder();
-    var pin = pinBuilder.fromUrl('./png64/winfo-icon-gaosuchuan.png',Cesium.Color.GREEN,48).toDataURL();
+    var dataSource = new Cesium.CustomDataSource;
+    // var pin = pinBuilder.fromUrl('./png64/winfo-icon-gaosuchuan.png',Cesium.Color.GREEN,48).toDataURL();
 
-    for (var i = 0, len = e.length; i < len; i++) {
+    for (var i = 0, len = 2000; i < len; i++) {
         var point = e[i],
             lng = point.POSITION.split(',')[1],
             lat = point.POSITION.split(',')[0];
-        // points.add({
-        //     position: Cesium.Cartesian3.fromDegrees(lng, lat),
-        //     color: new Cesium.Color.fromCssColorString("#3388ff"),
-        //     scaleByDistance: new Cesium.NearFarScalar(150, 1, 8e6, .2),
-        //     label:'qq'
-        // })
-
-        var billboard = {
-            position: new Cesium.Cartesian3.fromDegrees(lng, lat),
-            image: pin,
-            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            scaleByDistance: new Cesium.NearFarScalar(150, 0.8, 8e6, .2),
-            id: i,
-            label: '11111'
-        };
-        billboards.add(billboard);
+        dataSource.entities.add({
+            name: point.NAME,
+            position: Cesium.Cartesian3.fromDegrees(lng, lat),
+            point: {
+                color: new Cesium.Color.fromCssColorString("#3388ff"),
+                pixelSize: 10,
+                outlineColor: new Cesium.Color.fromCssColorString("#ffffff"),
+                outlineWidth: 2,
+                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                scaleByDistance: new Cesium.NearFarScalar(150, 1, 8e6, .2)
+            },
+            label: {
+                text: point.NAME,
+                font: "normal small-caps normal 17px 楷体",
+                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                fillColor: Cesium.Color.AZURE,
+                outlineColor: Cesium.Color.BLACK,
+                outlineWidth: 2,
+                horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                pixelOffset: new Cesium.Cartesian2(0, -20),
+                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+                distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 2e4)
+            },
+            // data: a,
+            // tooltip: {
+            //     html: r,
+            //     anchor: [0, -12]
+            // }
+        })
     }
-    viewer.scene.primitives.add(billboards);
+    viewer.dataSources.add(dataSource)
 
     return
 
