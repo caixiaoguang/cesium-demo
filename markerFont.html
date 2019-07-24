@@ -1,10 +1,11 @@
-<!-- 2019-7-2 20:12:26 | 版权所有 火星科技 http://marsgis.cn  【联系我们 微信：muyao1987  邮箱 wh@marsgis.cn】 -->
+<!-- 2019-6-22 20:20:51 | 版权所有 火星科技 http://marsgis.cn  【联系我们 微信：muyao1987  邮箱 wh@marsgis.cn】 -->
 <!DOCTYPE html>
 <html>
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,minimum-scale=1,maximum-scale=1">
+    <meta name="author" content="火星科技 http://cesium.marsgis.cn ">
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -15,110 +16,76 @@
     <meta name="description"
         content="火星科技 合肥火星 合肥火星科技 合肥火星科技有限公司 leaflet leaflet框架 leaflet开发 cesium cesium开发 cesium框架 三维 地球 模型  gis marsgis 地图离线 地图开发 地图框架 地图外包 框架 开发 外包  地图离线 二维地图 三维地图 全景漫游 地理信息系统 云GIS 三维GIS GIS平台 WebGIS">
     <link rel="shortcut icon" type="image/x-icon" href="../docs/img/favicon/favicon.ico">
-    <title>点+文字 Entity矢量数据加载 |MarsGIS for Cesium|三维地图| 火星科技|合肥火星科技|合肥火星科技有限公司</title>
+    <title>按网格动态加载POI大数据矢量数据 |MarsGIS for Cesium|三维地图| 火星科技|合肥火星科技|合肥火星科技有限公司</title>
     <script src="../lib/include-lib.js" libpath="../lib/"
-        include="jquery,font-awesome,bootstrap,bootstrap-checkbox,layer,haoutil,turf,cesium-mars"></script>
+        include="jquery,font-awesome,bootstrap,layer,haoutil,turf,cesium-mars"></script>
     <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body class="dark">
     <div id="mask" class="signmask" onclick="removeMask()"></div>
     <div id="cesiumContainer" class="cesium-container"></div>
-    <div class="infoview">
-        <div class="checkbox checkbox-primary checkbox-inline"><input id="chkClustering" class="styled" type="checkbox">
-            <label for="chkClustering">是否聚合</label></div>
-    </div>
     <script>
         function removeMask() {
             $("#mask").remove()
         }
-        var viewer, dataSource;
+        var viewer;
 
         function initMap() {
             var e = haoutil.system.getRequestByName("config", "config/config.json");
             mars3d.createMap({
                 id: "cesiumContainer",
                 url: e,
-                success: function (e, t) {
+                success: function (e, a) {
                     viewer = e, setTimeout(removeMask, 3e3), initWork()
                 }
             })
         }
 
         function initWork() {
-            $.getJSON("../data/apidemo/marker.json", function (e) {
-                addFeature(e.Data)
-            }), $("#chkClustering").change(function () {
-                var e = $(this).prop("checked");
-                dataSource.clustering.enabled = e
-            })
-        }
-
-        function addFeature(e) {
-            dataSource = new Cesium.CustomDataSource;
-            for (var t = 0, i = e.length; t < i; t++) {
-                var a = e[t],
-                    r =
-                    '<table style="width: 200px;"><tr><th scope="col" colspan="4"  style="text-align:center;font-size:15px;">' +
-                    a.name +
-                    '</th></tr><tr><td >住用单位：</td><td >XX单位</td></tr><tr><td >建筑面积：</td><td >43平方米</td></tr><tr><td >建筑层数：</td><td >2</td></tr><tr><td >建筑结构：</td><td >钢混</td></tr><tr><td >建筑年份：</td><td >2006年</td></tr><tr><td colspan="4" style="text-align:right;"><a href="javascript:showXQ(\'' +
-                    a.ID + "')\">更多</a></td></tr></table>";
-                dataSource.entities.add({
-                    name: a.name,
-                    position: Cesium.Cartesian3.fromDegrees(a.X, a.Y),
-                    point: {
-                        color: new Cesium.Color.fromCssColorString("#3388ff"),
-                        pixelSize: 10,
-                        outlineColor: new Cesium.Color.fromCssColorString("#ffffff"),
-                        outlineWidth: 2,
-                        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                        scaleByDistance: new Cesium.NearFarScalar(150, 1, 8e6, .2)
-                    },
-                    label: {
-                        text: a.name,
-                        font: "normal small-caps normal 17px 楷体",
-                        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-                        fillColor: Cesium.Color.AZURE,
-                        outlineColor: Cesium.Color.BLACK,
-                        outlineWidth: 2,
-                        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-                        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                        pixelOffset: new Cesium.Cartesian2(0, -20),
-                        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                        distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 2e6)
-                    },
-                    data: a,
-                    tooltip: {
-                        html: r,
-                        anchor: [0, -12]
+            viewer.mars.updateTerrainProvider(!1), viewer.mars.centerAt({
+                y: 31.787488,
+                x: 117.222228,
+                z: 2249.1,
+                heading: 361,
+                pitch: -28.6,
+                roll: 361
+            });
+            new mars3d.layer.POILayer({
+                minimumLevel: 13,
+                debuggerTileInfo: !1,
+                key: ["c95467d0ed2a3755836e37dc27369f97", "4320dda936d909d73ab438b4e29cf2a2",
+                    "e64a96ed7e361cbdc0ebaeaf3818c564", "df3247b7df64434adecb876da94755d7",
+                    "d4375ec477cb0a473c448fb1f83be781", "13fdd7b2b90a9d326ae96867ebcc34ce",
+                    "c34502450ae556f42b21760faf6695a0", "57f8ebe12797a73fc5b87f5d4ef859b1"
+                ],
+                height: 5,
+                filter: {
+                    types: "120000|130000|190000"
+                },
+                symbol: {
+                    styleOptions: {
+                        image: "img/mypoint/3.png",
+                        scale: 1,
+                        scaleByDistance: !0,
+                        scaleByDistance_far: 2e4,
+                        scaleByDistance_farValue: .5,
+                        scaleByDistance_near: 1e3,
+                        scaleByDistance_nearValue: 1,
+                        label: {
+                            font_size: 15,
+                            color: "#ffffff",
+                            border: !0,
+                            border_color: "#000000",
+                            pixelOffset: [0, -30],
+                            distanceDisplayCondition: !0,
+                            distanceDisplayCondition_far: 5e3,
+                            distanceDisplayCondition_near: 0
+                        }
                     }
-                })
-            }
-            viewer.flyTo(dataSource.entities, {
-                duration: 3
-            }), dataSource.clustering.enabled = !1, dataSource.clustering.pixelRange = 20;
-            var n = {},
-                o = new Cesium.PinBuilder;
-            dataSource.clustering.clusterEvent.addEventListener(function (e, t) {
-                var i = e.length;
-                t.label.show = !1, t.billboard.show = !0, t.billboard.id = t.label.id, t.billboard
-                    .verticalOrigin = Cesium.VerticalOrigin.BOTTOM, n[i] || (n[i] = o.fromText(i, Cesium.Color
-                        .BLUE, 48).toDataURL()), t.billboard.image = n[i]
-            }), viewer.dataSources.add(dataSource)
-        }
-
-        function showXQ(e) {
-            layer.open({
-                type: 2,
-                title: "查看历史",
-                fix: !0,
-                shadeClose: !0,
-                maxmin: !0,
-                area: ["80%", "80%"],
-                content: "http://marsgis.cn/",
-                skin: "layer-mars-dialog animation-scale-up",
-                success: function (e) {}
-            })
+                },
+                visible: !0
+            }, viewer)
         }
         $(document).ready(function () {
             mars3d.util.webglreport() || (alert("系统检测到您使用的浏览器不支持WebGL功能"), layer.open({

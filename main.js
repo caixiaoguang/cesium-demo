@@ -33,17 +33,17 @@ function initViewer() {
         navigationHelpButton: false,
         creditsDisplay: false,
         baseLayerPicker: false,
-        imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
-            url: "http://t0.tianditu.com/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=1902c209c7a7480dfb962751b839b91e",
+        // imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
+        //     url: "http://t0.tianditu.com/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=1902c209c7a7480dfb962751b839b91e",
 
-            // url:"http://10.150.25.19:3001/MapService.ashx?REQUEST=GetMap&SERVICE=CacheMap&Y={TileCol}&X={TileRow}&LEVEL={TileMatrix}&LAYERS=HN_Image&SessionID=0",
-            layer: "tdtBasicLayer",
-            style: "default",
-            format: "image/jpeg",
-            tileMatrixSetID: "GoogleMapsCompatible",
-            show: false,
-            maximumLevel: 18
-        }),
+        //     // url:"http://10.150.25.19:3001/MapService.ashx?REQUEST=GetMap&SERVICE=CacheMap&Y={TileCol}&X={TileRow}&LEVEL={TileMatrix}&LAYERS=HN_Image&SessionID=0",
+        //     layer: "tdtBasicLayer",
+        //     style: "default",
+        //     format: "image/jpeg",
+        //     tileMatrixSetID: "GoogleMapsCompatible",
+        //     show: false,
+        //     maximumLevel: 18
+        // }),
         terrainProvider: Cesium.createWorldTerrain({
             requestWaterMask: true,
             requestVertexNormals: true
@@ -252,108 +252,69 @@ function loadNavdata() {
 
 function addFeature(e) {
     var points = viewer.scene.primitives.add(new Cesium.PointPrimitiveCollection());
+    var labels = viewer.scene.primitives.add(new Cesium.LabelCollection());
     var billboards = viewer.scene.primitives.add(new Cesium.BillboardCollection());
     var pinBuilder = new Cesium.PinBuilder();
     var dataSource = new Cesium.CustomDataSource;
-    // var pin = pinBuilder.fromUrl('./png64/winfo-icon-gaosuchuan.png',Cesium.Color.GREEN,48).toDataURL();
 
-    for (var i = 0, len = 2000; i < len; i++) {
+    for (var i = 0, len = 9000; i < len; i++) {
         var point = e[i],
             lng = point.POSITION.split(',')[1],
             lat = point.POSITION.split(',')[0];
-        dataSource.entities.add({
-            name: point.NAME,
+        // viewer.entities.add({
+        //     name: point.NAME,
+        //     position: Cesium.Cartesian3.fromDegrees(lng, lat),
+        //     point: {
+        //         color: new Cesium.Color.fromCssColorString("#3388ff"),
+        //         pixelSize: 8,
+        //         outlineColor: new Cesium.Color.fromCssColorString("#ffffff"),
+        //         outlineWidth: 2,
+        //         heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+        //         scaleByDistance: new Cesium.NearFarScalar(100, 1, 8e6, .1),
+        //         distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 1.5e4)
+        //     },
+        //     label: {
+        //         text: point.NAME,
+        //         font: "normal small-caps normal 17px 楷体",
+        //         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        //         fillColor: Cesium.Color.AZURE,
+        //         outlineColor: Cesium.Color.BLACK,
+        //         outlineWidth: 1,
+        //         horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+        //         verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+        //         pixelOffset: new Cesium.Cartesian2(0, -20),
+        //         heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+        //         distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 1.5e4)
+        //     }
+        // })
+        points.add({
             position: Cesium.Cartesian3.fromDegrees(lng, lat),
-            point: {
-                color: new Cesium.Color.fromCssColorString("#3388ff"),
-                pixelSize: 10,
-                outlineColor: new Cesium.Color.fromCssColorString("#ffffff"),
-                outlineWidth: 2,
-                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                scaleByDistance: new Cesium.NearFarScalar(150, 1, 8e6, .2)
-            },
-            label: {
-                text: point.NAME,
-                font: "normal small-caps normal 17px 楷体",
-                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-                fillColor: Cesium.Color.AZURE,
-                outlineColor: Cesium.Color.BLACK,
-                outlineWidth: 2,
-                horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                pixelOffset: new Cesium.Cartesian2(0, -20),
-                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 2e4)
-            },
-            // data: a,
-            // tooltip: {
-            //     html: r,
-            //     anchor: [0, -12]
-            // }
+            color: new Cesium.Color.fromCssColorString("#3388ff"),
+            outlineColor: new Cesium.Color.fromCssColorString("#ffffff"),
+            outlineWidth: 1,
+
+        })
+        labels.add({
+            position: Cesium.Cartesian3.fromDegrees(lng, lat),
+            text: point.NAME,
+            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+            font: "normal small-caps normal 17px 楷体",
+
+            fillColor: Cesium.Color.AZURE,
+            outlineColor: Cesium.Color.BLACK,
+            outlineWidth: 1,
+            horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+            pixelOffset: new Cesium.Cartesian2(0, -20),
+            // heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+            distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 1.5e4)
         })
     }
-    viewer.dataSources.add(dataSource)
+    // viewer.dataSources.add(dataSource)
+
 
     return
 
-
-
-    var dataSource = new Cesium.CustomDataSource();
-    for (var t = 0, i = e.length; t < i; t++) {
-        var a = e[t],
-            r =
-            '<table style="width: 200px;"><tr><th scope="col" colspan="4"  style="text-align:center;font-size:15px;">' +
-            a.NAME +
-            '</th></tr><tr><td >住用单位：</td><td >XX单位</td></tr><tr><td >建筑面积：</td><td >43平方米</td></tr><tr><td >建筑层数：</td><td >2</td></tr><tr><td >建筑结构：</td><td >钢混</td></tr><tr><td >建筑年份：</td><td >2006年</td></tr><tr><td colspan="4" style="text-align:right;"><a href="javascript:showXQ(\'' +
-            a.TYPEID + "')\">更多</a></td></tr></table>",
-            lng = a.POSITION.split(',')[1],
-            lat = a.POSITION.split(',')[0];
-
-        dataSource.entities.add({
-            name: a.NAME,
-            position: Cesium.Cartesian3.fromDegrees(lng, lat),
-            point: {
-                color: new Cesium.Color.fromCssColorString("#3388ff"),
-                pixelSize: 10,
-                outlineColor: new Cesium.Color.fromCssColorString("#ffffff"),
-                outlineWidth: 2,
-                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                scaleByDistance: new Cesium.NearFarScalar(150, 1, 8e6, .2)
-            },
-            label: {
-                text: a.NAME,
-                font: "normal small-caps normal 17px 楷体",
-                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-                fillColor: Cesium.Color.AZURE,
-                outlineColor: Cesium.Color.BLACK,
-                outlineWidth: 2,
-                horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                pixelOffset: new Cesium.Cartesian2(0, -20),
-                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 1e4)
-            },
-            data: a,
-            tooltip: {
-                html: r,
-                anchor: [0, -12]
-            }
-        })
-    }
-    // viewer.flyTo(dataSource.entities, {
-    //     duration: 3
-    // });
-    // viewer.dataSources.add(dataSource)
-    dataSource.clustering.enabled = true;
-    dataSource.clustering.pixelRange = 20;
-    var n = {},
-        o = new Cesium.PinBuilder;
-    dataSource.clustering.clusterEvent.addEventListener(function (e, t) {
-        var i = e.length;
-        t.label.show = !1, t.billboard.show = !0, t.billboard.id = t.label.id, t.billboard
-            .verticalOrigin = Cesium.VerticalOrigin.BOTTOM, n[i] || (n[i] = o.fromText(i, Cesium.Color
-                .BLUE, 48).toDataURL()), t.billboard.image = n[i]
-    }), viewer.dataSources.add(dataSource)
 }
 
 
